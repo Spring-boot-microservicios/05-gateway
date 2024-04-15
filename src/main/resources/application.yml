@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: gateway
+  profiles:
+#    default: default # Fase #1
+#    default: eureka-off # Fase #2 para utilizar las rutas estaticas
+#    default: eureka-on # Fase #3 para utilizar rutas dinamicas
+    default: eureka-on-circuit-breaker
+
+server:
+  port: 4040
+
+eureka:
+  client:
+#    fetch-registry: false # Fase #1, Fase #2 las rutas estaticas
+    fetch-registry: true # Fase #3 para utilizar rutas dinamicas
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
