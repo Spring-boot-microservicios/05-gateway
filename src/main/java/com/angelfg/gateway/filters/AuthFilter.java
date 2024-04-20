@@ -5,7 +5,6 @@ import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ServerWebExchange;
@@ -25,6 +24,7 @@ public class AuthFilter implements GatewayFilter {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+
         if (!exchange.getRequest().getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
             return this.onError(exchange);
         }
@@ -37,8 +37,8 @@ public class AuthFilter implements GatewayFilter {
 
         final var chunks = tokenHeader.split(" ");
 
-        if (chunks.length != 2 || chunks[0].equals("Bearer")) {
-            this.onError(exchange);
+        if (chunks.length != 2 || !chunks[0].equals("Bearer")) {
+            return this.onError(exchange);
         }
 
         final var token = chunks[1]; // token
@@ -51,11 +51,12 @@ public class AuthFilter implements GatewayFilter {
                 .bodyToMono(TokenDto.class)
                 .map(response -> exchange)
                 .flatMap(chain::filter);
+
     }
 
     private Mono<Void> onError(ServerWebExchange exchange) {
-        final ServerHttpResponse response = exchange.getResponse();
-        response.setStatusCode(HttpStatus.BAD_REQUEST);
+        final var response = exchange.getResponse();
+        response.setStatusCode(HttpStatus.UNAUTHORIZED);
 
         return response.setComplete();
     }

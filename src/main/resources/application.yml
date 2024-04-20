@@ -5,7 +5,8 @@ spring:
 #    default: default # Fase #1
 #    default: eureka-off # Fase #2 para utilizar las rutas estaticas
 #    default: eureka-on # Fase #3 para utilizar rutas dinamicas
-    default: eureka-on-circuit-breaker
+#    default: eureka-on-circuit-breaker
+    default: oauth2 # perfil que realizar la autenticacion de los micros
 
 server:
   port: 4040
